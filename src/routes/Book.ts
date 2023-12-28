@@ -65,7 +65,7 @@ bookRoutes
       }
 
       const bookData = body;
-      const response = addBook({
+      const response = await addBook({
         name: bookData.name,
         author: bookData.author,
         price: bookData.price,
@@ -91,14 +91,15 @@ bookRoutes
   /**
    * Update Book
    */
-  .put("/books/:id", ({ params, body, set }) => {
+  .put("/books/:id", async ({ params, body, set }) => {
     const bookData: any = body;
     const bookId: number = parseInt(params.id);
-    const response = updateBook(bookId, {
+    const response = await updateBook(bookId, {
       name: bookData.name,
       author: bookData.author,
       price: bookData.price,
     });
+    console.log(response)
 
     if (response.status === "error") {
       set.status = 409;
@@ -112,14 +113,14 @@ bookRoutes
   /**
    * DELETE BOOK
    */
-  .delete("/books/:id", ({ params, set }) => {
+  .delete("/books/:id", async ({ params, set }) => {
     const bookId: number = parseInt(params.id);
-    const response = deleteBook(bookId);
+    const response = await deleteBook(bookId);
 
     if (response.status === "error") {
       set.status = 409;
     }
-
+    set.status = 204
     return response;
   });
 

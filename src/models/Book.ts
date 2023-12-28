@@ -1,43 +1,60 @@
-import { Database } from "bun:sqlite";
-const db = new Database("mydb.sqlite");
+import { turso } from "../turso";
 
-function getAllBook(limit: number = 100) {
+async function getAllBook(limit: number = 20) {
   try {
-    const query = db.query("SELECT * from books LIMIT $limit;");
-    return query.all({ $limit: limit });
-  } catch (error) {
-    console.log(error);
+    const rs = await turso.execute({
+      sql: "SELECT * FROM books LIMIT ?;",
+      args: [ limit ],
+    });
+
+    return {
+      status: "ok",
+      data: rs.rows,
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
-function getBookById(id: number) {
+async function getBookById(id: number) {
   try {
-    const query = db.query("SELECT * from books WHERE id=$id;");
-    return query.get({
-      $id: id,
+    const rs = await turso.execute({
+      sql: "SELECT * FROM books WHERE id = ?;",
+      args: [ id ],
     });
+
+    if (rs.rows.length === 0) {
+      return {
+        status: "error",
+        message: "Book not found",
+      }
+    }
+
+    return {
+      status: "ok",
+      data: rs.rows,
+    }
+
   } catch (error) {
     console.log(error);
     return {};
   }
 }
 
-function addBook(book: Book) {
+async function addBook(book: Book) {
   try {
     if (!book.name || !book.author || !book.price) {
       throw new Error("All fields are required");
     }
 
-    const query = db.query(`INSERT INTO books 
-          (name, author, price) 
-          VALUES ($name, $author, $price);`);
-    query.run({
-      $name: book.name,
-      $author: book.author,
-      $price: book.price,
+    const rs = await turso.execute({
+      sql: "INSERT INTO books (name, author, price) VALUES (?, ?, ?)",
+      args: [book.name, book.author, book.price],
     });
+
     return {
       status: "ok",
+      data: rs.rows,
     };
   } catch (error) {
     console.log(error);
@@ -47,23 +64,21 @@ function addBook(book: Book) {
   }
 }
 
-function updateBook(id: number, book: Book) {
+async function updateBook(id: number, book: Book) {
   if (!book.name || !book.author || !book.price) {
     throw new Error("All fields are required");
   }
 
   try {
-    const query = db.query(`UPDATE books 
-          SET name=$name, author=$author, price=$price 
-          WHERE id=$id;`);
-    query.run({
-      $id: id,
-      $name: book.name,
-      $author: book.author,
-      $price: book.price,
+    const rs = await turso.execute({
+      sql: "UPDATE books SET name = ?, author = ?, price = ? WHERE id = ?",
+      args: [book.name, book.author, book.price, id],
     });
+
     return {
       status: "ok",
+      message: `Book with id ${id} updated`,
+      data: rs.rows,
     };
   } catch (error) {
     console.log(error);
@@ -73,32 +88,33 @@ function updateBook(id: number, book: Book) {
   }
 }
 
-function deleteBook(id: number) {
+async function deleteBook(id: number) {
   if (!id) {
     throw new Error("Id is required");
   }
 
   try {
-    const findId = db.query(`SELECT * FROM books WHERE id=$id;`);
-    findId.run({
-      $id: id,
+    const findId = await turso.execute({
+      sql: "SELECT * FROM books WHERE id = ?",
+      args: [id],
     });
-
-    if (!findId.get({ $id: id })) {
+    
+    if (findId.rows.length === 0) {
       return {
         message: "Book not found",
         status: "error",
       };
     }
 
-    const query = db.query(`DELETE FROM books WHERE id=$id;`);
-    query.run({
-      $id: id,
+    const rs = await turso.execute({
+      sql: "DELETE FROM books WHERE id = ?",
+      args: [id],
     });
 
     return {
       message: `Book with id ${id} deleted`,
       status: "ok",
+      data: rs.rows,
     };
   } catch (error) {
     console.log(error);

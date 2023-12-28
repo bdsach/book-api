@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 
-import { addUser, getUser } from "../models/User";
+import { addUser, checkUserLogin } from "../models/User";
 const userRoute = new Elysia();
 
 userRoute
@@ -52,7 +52,7 @@ userRoute
     async ({ jwt, cookie, setCookie, body }) => {
       try {
         let userData = body;
-        const response = await getUser(userData);
+        const response = await checkUserLogin(userData);
 
         if (!response.loggedIn) {
           return response;
@@ -82,6 +82,5 @@ userRoute
       }),
     }
   );
-
 
 export default userRoute;

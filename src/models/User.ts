@@ -1,36 +1,37 @@
-import { Database } from "bun:sqlite";
-const db = new Database("mydb.sqlite");
+import { turso } from "../turso";
 
-function addUser(user: User) {
+async function addUser(user: User) {
   try {
-    const query = db.query(`INSERT INTO users 
-          (email, password) 
-          VALUES ($email, $password);`);
-    query.run({
-      $email: user.email,
-      $password: user.password,
+    const rs = await turso.execute({
+      sql: "insert into users (email, password) values (?, ?)",
+      args: [ user.email, user.password ],
     });
-  } catch (error) {
-    console.log(error);
+    return {
+      status: "ok",
+      data: rs.rows,
+      message: "User created",
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
-async function getUser(user: User) {
+async function checkUserLogin(user: User) {
   try {
-    const query = db.query(`SELECT * FROM users WHERE email=$email`);
-    const userData: any = query.get({
-      $email: user.email,
+    const query = await turso.execute({
+      sql: "select * from users where email = ?",
+      args: [ user.email ],
     });
-
-    if (!userData) {
+    const userData = query.rows
+  
+    if (userData.length === 0) {
       throw new Error("User not found");
     }
 
-    const isMatch = await Bun.password.verify(user.password, userData.password);
+    const isMatch = await Bun.password.verify(user.password, String(userData[0].password));
     if (!isMatch) {
       throw new Error("Invalid password");
     }
-
     return {
       loggedIn: true,
     };
@@ -42,4 +43,4 @@ async function getUser(user: User) {
   }
 }
 
-export { addUser, getUser };
+export { addUser, checkUserLogin };
