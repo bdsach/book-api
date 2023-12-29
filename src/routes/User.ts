@@ -86,13 +86,16 @@ userRoute
   /**
    * Logout
    */
-  .get("/logout", async ({ setCookie, set }) => {
+  .get("/logout", async ({ jwt, cookie, setCookie, body, set }) => {
     try {
-      setCookie("token", "", {
-        httpOnly: true,
-        maxAge: 0,
-      });
-      set.status = 204
+      setCookie(
+        "token","",
+        {
+          httpOnly: true,
+          maxAge: 0,
+        }
+      );
+      set.status = 200
       return {
         message: "Logout successful",
       };
