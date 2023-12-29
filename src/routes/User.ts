@@ -81,6 +81,25 @@ userRoute
         password: t.String(),
       }),
     }
-  );
+  )
+
+  /**
+   * Logout
+   */
+  .get("/logout", async ({ setCookie, set }) => {
+    try {
+      setCookie("token", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      set.status = 204
+      return {
+        message: "Logout successful",
+      };
+    } catch (error) {
+      set.status = 500;
+      return { message: "Internal Server Error" };
+    }
+  })
 
 export default userRoute;
