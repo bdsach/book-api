@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 
-import { addUser, checkUserLogin } from "../models/User";
+import { addUser, checkUserLogin, getUser } from "../models/User";
 const userRoute = new Elysia();
 
 userRoute
@@ -103,6 +103,27 @@ userRoute
       set.status = 500;
       return { message: "Internal Server Error" };
     }
+  })
+  /**
+   * Profile
+   */
+  .get("/profile", async ({ jwt, cookie: { token }, set }) => {
+    const profile = await jwt.verify(token);
+    if (!profile) {
+      console.log("Unauthorized");
+      set.status = 401;
+      return {
+        status: "error",
+        message: "Unauthorized",
+      };
+    }
+
+    const userResult = await getUser(String(profile.email));
+    if (userResult?.status === "error") {
+      set.status = 404
+      return userResult
+    }
+    return userResult
   })
 
 export default userRoute;

@@ -43,4 +43,27 @@ async function checkUserLogin(user: User) {
   }
 }
 
-export { addUser, checkUserLogin };
+async function getUser(email: string) {
+  try {
+    const rs = await turso.execute({
+      sql: "select email from users where email = ?",
+      args: [ email ],
+    });
+
+    if (rs.rows.length === 0) {
+      return {
+        status: "error",
+        message: "User not found",
+      }
+    }
+
+    return {
+      status: "ok",
+      data: rs.rows,
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export { addUser, checkUserLogin, getUser };
