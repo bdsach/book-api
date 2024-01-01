@@ -120,7 +120,7 @@ bookRoutes
     if (response.status === "error") {
       set.status = 409;
     }
-    set.status = 204
+    set.status = 200;
     return response;
   });
 
