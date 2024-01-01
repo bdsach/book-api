@@ -46,7 +46,7 @@ async function checkUserLogin(user: User) {
 async function getUser(email: string) {
   try {
     const rs = await turso.execute({
-      sql: "select email from users where email = ?",
+      sql: "select email, first_name, last_name from users where email = ?",
       args: [ email ],
     });
 
