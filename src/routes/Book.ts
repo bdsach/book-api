@@ -52,7 +52,7 @@ bookRoutes
    * Add Book
    */
   .post(
-    "/books",
+    "/book",
     async ({ jwt, cookie: { token }, set, body }) => {
       const profile = await jwt.verify(token);
 
@@ -91,7 +91,7 @@ bookRoutes
   /**
    * Update Book
    */
-  .put("/books/:id", async ({ params, body, set }) => {
+  .put("/book/:id", async ({ params, body, set }) => {
     const bookData: any = body;
     const bookId: number = parseInt(params.id);
     const response = await updateBook(bookId, {
@@ -113,7 +113,7 @@ bookRoutes
   /**
    * DELETE BOOK
    */
-  .delete("/books/:id", async ({ params, set }) => {
+  .delete("/book/:id", async ({ params, set }) => {
     const bookId: number = parseInt(params.id);
     const response = await deleteBook(bookId);
 
