@@ -1,15 +1,21 @@
-# Elysia with Bun runtime
+# Book CRUD API
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
-```bash
-bun create elysia ./elysia-example
+Simple Book CRUD API. Made with Elysia with Bun runtime.
+
+## Feature
+
+- Registration User
+- Login with JWT
+- Authentication first for all routes
+- Turso for Database
+- Easy deploy to fly.io with Docker
+
+## Build and Run
+
+```
+docker build -t book-api .
 ```
 
-## Development
-To start the development server run:
-```bash
-bun run dev
 ```
-
-Open http://localhost:3000/ with your browser to see the result.
+docker run --env-file .env --name book-api -p 3000:3000 -d book-api
+```
