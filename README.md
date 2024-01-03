@@ -7,6 +7,7 @@ Simple Book CRUD API. Made with Elysia with Bun runtime.
 - Registration User
 - Login with JWT
 - Authentication first for all routes
+- Logger with logysia
 - Turso for Database
 - Easy deploy to fly.io with Docker
 
