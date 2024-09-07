@@ -8,8 +8,8 @@
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
     "@elysiajs/jwt": "^0.8.0",
-    "@grotto/logysia": "^0.1.1",
-    "@libsql/client": "^0.4.0-pre.5",
+    "@grotto/logysia": "^0.1.4",
+    "@libsql/client": "^0.4.3",
     "elysia": "latest"
   },
   "devDependencies": {
